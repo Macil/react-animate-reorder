@@ -1,5 +1,8 @@
 import _ from 'lodash';
 import React from 'react';
+import Kefir from 'kefir';
+
+const TICK = 17;
 
 function _childrenToList(children) {
   const list = [];
@@ -10,24 +13,43 @@ function _childrenToList(children) {
 }
 
 const ReorderChildWrapper = React.createClass({
+  componentWillMount: function() {
+    this.resetter = Kefir.emitter();
+  },
   moveRelativeY(y) {
-    clearTimeout(this.timer);
+    this.resetter.emit();
     if (this.isMounted()) {
       const node = this.getDOMNode();
+      let animated = false;
       if (!node.classList.contains('reorder-wrapper-item')) {
-        node.classList.add('reorder-wrapper-item');
-        node.style.top = '0';
-        this.timer = setTimeout(() => {
-          node.style.top = y+'px';
-        }, 1);
+        if (y !== 0) {
+          node.classList.add('reorder-wrapper-item');
+          node.style.top = '0';
+          Kefir.later(TICK).takeUntilBy(this.resetter).onValue(() => {
+            node.style.top = y+'px';
+          });
+          animated = true;
+        }
       } else {
-        node.style.top = y+'px';
+        if (parseInt(node.style.top, 10) !== y) {
+          node.style.top = y+'px';
+          animated = true;
+        }
       }
-      console.log('will move', node, y);
+      if (animated) {
+        return Kefir.merge([
+          Kefir.fromEvent(node, 'transitionend'),
+          Kefir.fromEvent(node, 'webkitTransitionEnd'),
+          Kefir.fromEvent(node, 'mozTransitionEnd'),
+          Kefir.fromEvent(node, 'oTransitionEnd'),
+          Kefir.fromEvent(node, 'MSTransitionEnd')
+        ]).take(1).takeUntilBy(this.resetter);
+      }
     }
+    return Kefir.constant(null);
   },
   resetRelativeY() {
-    clearTimeout(this.timer);
+    this.resetter.emit();
     if (this.isMounted()) {
       const node = this.getDOMNode();
       node.classList.remove('reorder-wrapper-item');
@@ -93,20 +115,28 @@ const ReorderAnimator = React.createClass({
         }
       }
 
+      const streams = [];
       for (let key in lastKeyYs) {
         const ref = this.refs[key];
-        //ref.moveRelativeY(lastKeyYs[key] - newKeyYs[key]);
-        ref.moveRelativeY(newKeyYs[key] - lastKeyYs[key]);
+        streams.push(ref.moveRelativeY(newKeyYs[key] - lastKeyYs[key]));
       }
+      Kefir.combine(streams)
+        .take(1)
+        .onValue(() => {
+          this._resetChildren(nextProps.children);
+        });
     } else {
-      for (let key in this.refs) {
-        const ref = this.refs[key];
-        ref.resetRelativeY();
-      }
-      this.setState({
-        children: nextProps.children
-      });
+      this._resetChildren(nextProps.children);
     }
+  },
+  _resetChildren(nextChildren) {
+    for (let key in this.refs) {
+      const ref = this.refs[key];
+      ref.resetRelativeY();
+    }
+    this.setState({
+      children: nextChildren
+    });
   },
   render() {
     const children = React.Children.map(this.state.children, child =>

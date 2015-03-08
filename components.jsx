@@ -6,7 +6,8 @@ export const Item = React.createClass({
   render() {
     return (
       <div className="item">
-        Some item: {this.props.text}
+        Some item: {this.props.text} : lots of text aeiou aeiou aeiou aeiou aeiou
+        aeiou aeiouaeiouaeiouaeiouaeiouaeiouaeiou aeiou aeiouaeiouaeiou aeiou
       </div>
     );
   }
