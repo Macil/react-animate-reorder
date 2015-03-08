@@ -1,0 +1,10 @@
+.item {
+  /*margin: 8px;*/
+  padding: 4px;
+  border: solid black 1px;
+}
+
+.reorder-wrapper-item {
+  position: relative;
+  transition: top 1s ease-in;
+}
