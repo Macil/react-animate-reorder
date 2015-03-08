@@ -11,12 +11,13 @@ function _childrenToList(children) {
 
 const ReorderChildWrapper = React.createClass({
   moveRelativeY(y) {
+    clearTimeout(this.timer);
     if (this.isMounted()) {
       const node = this.getDOMNode();
       if (!node.classList.contains('reorder-wrapper-item')) {
         node.classList.add('reorder-wrapper-item');
         node.style.top = '0';
-        setTimeout(() => {
+        this.timer = setTimeout(() => {
           node.style.top = y+'px';
         }, 1);
       } else {
@@ -26,6 +27,7 @@ const ReorderChildWrapper = React.createClass({
     }
   },
   resetRelativeY() {
+    clearTimeout(this.timer);
     if (this.isMounted()) {
       const node = this.getDOMNode();
       node.classList.remove('reorder-wrapper-item');
@@ -55,56 +57,48 @@ const ReorderAnimator = React.createClass({
     const prevChildList = _childrenToList(this.state.children);
     const nextChildList = _childrenToList(nextProps.children);
 
-    let didReorder = false;
-
-    if (prevChildList.length > 0 && prevChildList.length === nextChildList.length) {
+    if (
+      this.isMounted() &&
+      prevChildList.length > 0 && prevChildList.length === nextChildList.length
+    ) {
       const length = prevChildList.length;
       const prevKeys = prevChildList.map(child => child.key);
       const nextKeysSet = new Set(nextChildList.map(child => child.key));
 
-      const isReorder = prevKeys.every(prevKey =>
-        nextKeysSet.has(prevKey) && this.refs[prevKey] && this.refs[prevKey].isMounted()
-      );
-      if (isReorder) {
-        const keyHeights = _.zipObject(prevChildList.map(child => {
-          const ref = this.refs[child.key];
-          const height = ref.getDOMNode().offsetHeight;
-          return [child.key, height];
-        }));
+      const keyHeights = _.zipObject(prevChildList.map(child => {
+        const ref = this.refs[child.key];
+        const height = ref.getDOMNode().offsetHeight;
+        return [child.key, height];
+      }));
 
-        const lastKeyYs = {};
-        {
-          lastKeyYs[ prevChildList[0].key ] = 0;
-          let lastY = 0;
-          for (let i=1; i < prevChildList.length; i++) {
-            const y = lastY + keyHeights[prevChildList[i-1].key];
-            lastKeyYs[ prevChildList[i].key ] = y;
-            lastY = y;
-          }
+      const lastKeyYs = {};
+      {
+        lastKeyYs[ prevChildList[0].key ] = 0;
+        let lastY = 0;
+        for (let i=1; i < prevChildList.length; i++) {
+          const y = lastY + keyHeights[prevChildList[i-1].key];
+          lastKeyYs[ prevChildList[i].key ] = y;
+          lastY = y;
         }
-
-        const newKeyYs = {};
-        {
-          newKeyYs[ nextChildList[0].key ] = 0;
-          let lastY = 0;
-          for (let i=1; i < nextChildList.length; i++) {
-            const y = lastY + keyHeights[nextChildList[i-1].key];
-            newKeyYs[ nextChildList[i].key ] = y;
-            lastY = y;
-          }
-        }
-
-        for (let key in lastKeyYs) {
-          const ref = this.refs[key];
-          //ref.moveRelativeY(lastKeyYs[key] - newKeyYs[key]);
-          ref.moveRelativeY(newKeyYs[key] - lastKeyYs[key]);
-        }
-        didReorder = true;
       }
 
-    }
+      const newKeyYs = {};
+      {
+        newKeyYs[ nextChildList[0].key ] = 0;
+        let lastY = 0;
+        for (let i=1; i < nextChildList.length; i++) {
+          const y = lastY + keyHeights[nextChildList[i-1].key];
+          newKeyYs[ nextChildList[i].key ] = y;
+          lastY = y;
+        }
+      }
 
-    if (!didReorder) {
+      for (let key in lastKeyYs) {
+        const ref = this.refs[key];
+        //ref.moveRelativeY(lastKeyYs[key] - newKeyYs[key]);
+        ref.moveRelativeY(newKeyYs[key] - lastKeyYs[key]);
+      }
+    } else {
       for (let key in this.refs) {
         const ref = this.refs[key];
         ref.resetRelativeY();
