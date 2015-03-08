@@ -27,6 +27,7 @@ const ReorderChildWrapper = React.createClass({
   },
   resetRelativeY() {
     if (this.isMounted()) {
+      const node = this.getDOMNode();
       node.classList.remove('reorder-wrapper-item');
       node.style.top = '';
     }
@@ -104,7 +105,7 @@ const ReorderAnimator = React.createClass({
     }
 
     if (!didReorder) {
-      for (let key in refs) {
+      for (let key in this.refs) {
         const ref = this.refs[key];
         ref.resetRelativeY();
       }
