@@ -20,7 +20,10 @@ export const List = React.createClass({
     return (
       <div className="list">
         Hello, this is list!<br/>
-        <button onClick={this.props.shuffle}>Shuffle</button><br/>
+        <button onClick={this.props.shuffle}>Shuffle</button>
+        <button onClick={this.props.add}>Add</button>
+        <button onClick={this.props.remove}>Remove</button>
+        <br/>
         <ReorderAnimator>
           {list}
         </ReorderAnimator>

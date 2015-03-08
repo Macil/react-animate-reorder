@@ -27,13 +27,22 @@ function main() {
   ];
   function render() {
     React.render(
-      React.createElement(Components.List, {items, shuffle}),
+      React.createElement(Components.List, {items, shuffle, add, remove}),
       mainDiv
     );
   }
   function shuffle() {
     items = _.shuffle(items);
-    //items.push({text:Math.random(), key:Math.random()});
+    render();
+  }
+  function add() {
+    const val = ''+Math.random();
+    const newItem = {text:val, key:val};
+    items.splice(_.random(0, items.length), 0, newItem);
+    render();
+  }
+  function remove() {
+    items.splice(_.random(0, items.length-1), 1);
     render();
   }
   render();
