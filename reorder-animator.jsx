@@ -1,6 +1,7 @@
 import zipObject from 'lodash/array/zipObject';
 import React from 'react';
 import Kefir from 'kefir';
+import kefirBus from 'kefir-bus';
 
 const TICK = 17;
 
@@ -14,7 +15,7 @@ function _childrenToList(children) {
 
 const ReorderChildWrapper = React.createClass({
   componentWillMount: function() {
-    this.resetter = Kefir.emitter();
+    this.resetter = kefirBus();
   },
   moveRelativeY(y) {
     this.resetter.emit();
@@ -38,11 +39,11 @@ const ReorderChildWrapper = React.createClass({
       }
       if (animated) {
         return Kefir.merge([
-          Kefir.fromEvent(node, 'transitionend'),
-          Kefir.fromEvent(node, 'webkitTransitionEnd'),
-          Kefir.fromEvent(node, 'mozTransitionEnd'),
-          Kefir.fromEvent(node, 'oTransitionEnd'),
-          Kefir.fromEvent(node, 'MSTransitionEnd')
+          Kefir.fromEvents(node, 'transitionend'),
+          Kefir.fromEvents(node, 'webkitTransitionEnd'),
+          Kefir.fromEvents(node, 'mozTransitionEnd'),
+          Kefir.fromEvents(node, 'oTransitionEnd'),
+          Kefir.fromEvents(node, 'MSTransitionEnd')
         ]).take(1).takeUntilBy(this.resetter);
       }
     }
