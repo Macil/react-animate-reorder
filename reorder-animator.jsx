@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import zipObject from 'lodash/array/zipObject';
 import React from 'react';
 import Kefir from 'kefir';
 
@@ -87,7 +87,7 @@ const ReorderAnimator = React.createClass({
       const prevKeys = prevChildList.map(child => child.key);
       const nextKeysSet = new Set(nextChildList.map(child => child.key));
 
-      const keyHeights = _.zipObject(prevChildList.map(child => {
+      const keyHeights = zipObject(prevChildList.map(child => {
         const ref = this.refs[child.key];
         const height = ref.getDOMNode().offsetHeight;
         return [child.key, height];
