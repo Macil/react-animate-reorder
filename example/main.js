@@ -1,6 +1,7 @@
 import shuffle from 'lodash/collection/shuffle';
 import random from 'lodash/number/random';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import * as Components from './components.jsx';
 
 const onReady = new Promise(function(resolve, reject) {
@@ -27,7 +28,7 @@ function main() {
     {text:'f', key:'f'}
   ];
   function render() {
-    React.render(
+    ReactDOM.render(
       React.createElement(Components.List, {items, shuffle: shuffleList, add, remove}),
       mainDiv
     );

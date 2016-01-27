@@ -1,5 +1,6 @@
 import zipObject from 'lodash/array/zipObject';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import Kefir from 'kefir';
 import kefirBus from 'kefir-bus';
 
@@ -14,13 +15,13 @@ function _childrenToList(children) {
 }
 
 const ReorderChildWrapper = React.createClass({
-  componentWillMount: function() {
+  componentWillMount() {
     this.resetter = kefirBus();
   },
   moveRelativeY(y) {
     this.resetter.emit();
     if (this.isMounted()) {
-      const node = this.getDOMNode();
+      const node = ReactDOM.findDOMNode(this);
       let animated = false;
       if (!node.classList.contains('reorder-wrapper-item')) {
         if (y !== 0) {
@@ -52,7 +53,7 @@ const ReorderChildWrapper = React.createClass({
   resetRelativeY() {
     this.resetter.emit();
     if (this.isMounted()) {
-      const node = this.getDOMNode();
+      const node = ReactDOM.findDOMNode(this);
       node.classList.remove('reorder-wrapper-item');
       node.style.top = '';
     }
@@ -90,7 +91,7 @@ const ReorderAnimator = React.createClass({
 
       const keyHeights = zipObject(prevChildList.map(child => {
         const ref = this.refs[child.key];
-        const height = ref.getDOMNode().offsetHeight;
+        const height = ReactDOM.findDOMNode(ref).offsetHeight;
         return [child.key, height];
       }));
 
