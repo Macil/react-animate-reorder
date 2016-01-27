@@ -6,14 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "NODE_ENV=development browserify -do bundle.js main.js",
-    "watch": "NODE_ENV=development watchify -v -do bundle.js main.js"
-  },
-  "browserify": {
-    "transform": [
-      "babelify",
-      "envify"
-    ]
+    "build": "NODE_ENV=development browserify -t babelify -do bundle.js main.js",
+    "watch": "NODE_ENV=development watchify -t babelify -v -do bundle.js main.js"
   },
   "dependencies": {
     "babel-cli": "^6.4.5",
@@ -22,7 +16,6 @@
     "babel-preset-react": "^6.3.13",
     "babelify": "^7.2.0",
     "browserify": "^13.0.0",
-    "envify": "^3.4.0",
     "watchify": "^3.7.0"
   }
 }
