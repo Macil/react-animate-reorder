@@ -1,5 +1,5 @@
 import React from 'react';
-import ReorderAnimator from './reorder-animator.jsx';
+import ReorderAnimator from '../src';
 
 export const Item = React.createClass({
   render() {
