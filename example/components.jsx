@@ -7,6 +7,8 @@ export const Item = React.createClass({
       <div className="item">
         Some item: {this.props.text} : lots of text aeiou aeiou aeiou aeiou aeiou
         aeiou aeiouaeiouaeiouaeiouaeiouaeiouaeiou aeiou aeiouaeiouaeiou aeiou
+        {' '}
+        {this.props.children}
       </div>
     );
   }
@@ -15,7 +17,7 @@ export const Item = React.createClass({
 export const List = React.createClass({
   render() {
     const list = this.props.items.map(item =>
-      <Item text={item.text} key={item.key} />
+      <Item text={item.text} key={item.key}>Test <i>Text</i></Item>
     );
     return (
       <div className="list">
