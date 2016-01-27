@@ -7,8 +7,22 @@
     "prepublish": "babel -s inline -d js/ src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgentME/react-animate-reorder.git"
+  },
+  "keywords": [
+    "react",
+    "animation",
+    "reorder",
+    "move",
+    "shuffle"
+  ],
   "author": "Chris Cowan <agentme49@gmail.com>",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AgentME/react-animate-reorder/issues"
+  },
   "dependencies": {
     "babel-runtime": "^6.3.19",
     "kefir": "^3.2.0",
