@@ -8,7 +8,9 @@ import kefirBus from 'kefir-bus';
 
 const TICK = 17;
 
+// Using React.Children.toArray changes the key properties!
 function _childrenToList(children) {
+  if (Array.isArray(children)) return children;
   const list = [];
   React.Children.forEach(children, child => {
     list.push(child);

@@ -21,7 +21,7 @@ function main() {
   const mainDiv = document.getElementById('main');
   let items = [
     {text:'a', key:'a'},
-    {text:'b', key:'b'},
+    {text:'b', key:'b', height: '3em'},
     {text:'c', key:'c'},
     {text:'d', key:'d'},
     {text:'e', key:'e'},

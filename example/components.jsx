@@ -1,10 +1,21 @@
 import React from 'react';
 import ReorderAnimator from '../src';
 
-export const Item = React.createClass({
+export class Item extends React.Component {
+  state = {
+    selected: false
+  };
+
   render() {
     return (
-      <div className="item">
+      <div
+        className="item"
+        style={{
+          height: this.props.height||'auto',
+          background: this.state.selected?'blue':'none'
+        }}
+        onClick={() => {this.setState({selected: !this.state.selected})}}
+      >
         Some item: {this.props.text} : lots of text aeiou aeiou aeiou aeiou aeiou
         aeiou aeiouaeiouaeiouaeiouaeiouaeiouaeiou aeiou aeiouaeiouaeiou aeiou
         {' '}
@@ -12,12 +23,14 @@ export const Item = React.createClass({
       </div>
     );
   }
-});
+}
 
 export const List = React.createClass({
   render() {
     const list = this.props.items.map(item =>
-      <Item text={item.text} key={item.key}>Test <i>Text</i></Item>
+      <Item text={item.text} height={item.height} key={item.key}>
+        Test <i>Text</i>
+      </Item>
     );
     return (
       <div className="list">
