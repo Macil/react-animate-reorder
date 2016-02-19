@@ -9,7 +9,7 @@ import kefirBus from 'kefir-bus';
 const TICK = 17;
 
 // Using React.Children.toArray changes the key properties!
-function _childrenToList(children) {
+function _childrenToList(children: any): Array<React.Element> {
   if (Array.isArray(children)) return children;
   const list = [];
   React.Children.forEach(children, child => {
@@ -91,50 +91,58 @@ export default class ReorderAnimator extends React.Component {
       prevChildList.length > 0 && prevChildList.length === nextChildList.length
     ) {
       const length = prevChildList.length;
-      const prevKeys = prevChildList.map(child => child.key);
-      const nextKeysSet = new Set(nextChildList.map(child => child.key));
 
-      const keyHeights = zipObject(prevChildList.map(child => {
-        const ref = this.refs[child.key];
-        const height = ReactDOM.findDOMNode(ref).offsetHeight;
-        return [child.key, height];
-      }));
+      const newChildrenByKey = new Map(nextChildList.map(child => [child.key, child]));
+      const allOldChildrenAreStillHere = prevChildList.every(({key}) => newChildrenByKey.has(key));
 
-      const lastKeyYs = {};
-      {
-        lastKeyYs[ prevChildList[0].key ] = 0;
-        let lastY = 0;
-        for (let i=1; i < prevChildList.length; i++) {
-          const y = lastY + keyHeights[prevChildList[i-1].key];
-          lastKeyYs[ prevChildList[i].key ] = y;
-          lastY = y;
+      if (allOldChildrenAreStillHere) {
+        const keyHeights = zipObject(prevChildList.map(child => {
+          const ref = this.refs[child.key];
+          const height = ReactDOM.findDOMNode(ref).offsetHeight;
+          return [child.key, height];
+        }));
+
+        const lastKeyYs = Object.create(null);
+        {
+          lastKeyYs[ prevChildList[0].key ] = 0;
+          let lastY = 0;
+          for (let i=1; i < prevChildList.length; i++) {
+            const y = lastY + keyHeights[prevChildList[i-1].key];
+            lastKeyYs[ prevChildList[i].key ] = y;
+            lastY = y;
+          }
         }
-      }
 
-      const newKeyYs = {};
-      {
-        newKeyYs[ nextChildList[0].key ] = 0;
-        let lastY = 0;
-        for (let i=1; i < nextChildList.length; i++) {
-          const y = lastY + keyHeights[nextChildList[i-1].key];
-          newKeyYs[ nextChildList[i].key ] = y;
-          lastY = y;
+        const newKeyYs = Object.create(null);
+        {
+          newKeyYs[ nextChildList[0].key ] = 0;
+          let lastY = 0;
+          for (let i=1; i < nextChildList.length; i++) {
+            const y = lastY + keyHeights[nextChildList[i-1].key];
+            newKeyYs[ nextChildList[i].key ] = y;
+            lastY = y;
+          }
         }
-      }
 
-      const streams = [];
-      for (let key in lastKeyYs) {
-        const ref = this.refs[key];
-        streams.push(ref.moveRelativeY(newKeyYs[key] - lastKeyYs[key]));
-      }
-      Kefir.combine(streams)
-        .take(1)
-        .onValue(() => {
-          this._resetChildren((nextProps:any).children);
+        this.setState({
+          children: prevChildList.map(({key}) => newChildrenByKey.get(key))
         });
-    } else {
-      this._resetChildren((nextProps:any).children);
+
+        const streams = [];
+        for (let key in lastKeyYs) {
+          const ref = this.refs[key];
+          streams.push(ref.moveRelativeY(newKeyYs[key] - lastKeyYs[key]));
+        }
+        Kefir.combine(streams)
+          .take(1)
+          .onValue(() => {
+            this._resetChildren((nextProps:any).children);
+          });
+        return;
+      }
     }
+
+    this._resetChildren((nextProps:any).children);
   }
 
   _resetChildren(nextChildren: any) {

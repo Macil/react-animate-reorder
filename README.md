@@ -5,8 +5,9 @@ positions if they're re-ordered.
 
 Note that only vertical movement is handled currently, and adding or removing
 elements to the list is not animated. The module
-[react-shuffle](https://github.com/FormidableLabs/react-shuffle) does
-everything that this module does and more, so use it instead!
+[react-shuffle](https://github.com/FormidableLabs/react-shuffle) handles that,
+so you might want to use it instead. However, it currently mounts its children
+twice and doesn't handle state well on its children.
 
 ## Usage
 
