@@ -64,14 +64,6 @@ const ReorderChildWrapper = React.createClass({
 });
 
 const ReorderAnimator = React.createClass({
-  getDefaultProps() {
-    return {
-      component: 'div',
-      style: {
-        position: 'relative'
-      }
-    };
-  },
   getInitialState() {
     return {
       children: this.props.children
@@ -144,10 +136,10 @@ const ReorderAnimator = React.createClass({
     const children = React.Children.map(this.state.children, child =>
       <ReorderChildWrapper ref={ child.key }>{ child }</ReorderChildWrapper>
     );
-    return React.createElement(
-      this.props.component,
-      this.props,
-      children
+    return (
+      <div style={{position: 'relative'}}>
+        { children }
+      </div>
     );
   }
 });
