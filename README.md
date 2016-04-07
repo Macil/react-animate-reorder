@@ -3,11 +3,16 @@
 This is a React component which causes its children to be animated to their new
 positions if they're re-ordered.
 
+**This project is unmaintained.**
+
 Note that only vertical movement is handled currently, and adding or removing
 elements to the list is not animated. The module
 [react-shuffle](https://github.com/FormidableLabs/react-shuffle) handles that,
 so you might want to use it instead. However, it currently mounts its children
 twice and doesn't handle state well on its children.
+
+Depending on what you want to do, you might be interested in
+[react-draggable-list](https://github.com/StreakYC/react-draggable-list) instead.
 
 ## Usage
 
